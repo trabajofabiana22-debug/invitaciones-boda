@@ -109,6 +109,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .foto img.real{object-position:var(--x,50%) var(--y,30%);transform:scale(var(--z,1));transform-origin:var(--x,50%) var(--y,30%)}
 .foto img.borroso{position:absolute;inset:0;object-position:50% 50%;filter:blur(8px) brightness(1.05);transform:scale(1.2);opacity:.85}
 .foto img.real{position:relative;cursor:zoom-in}
+.foto.grande{border-radius:2.5cqw;box-shadow:0 0 0 .7cqw color-mix(in srgb,var(--oro) 85%,#fff),0 0 0 1.6cqw rgba(255,250,240,.55),0 3cqw 7cqw rgba(30,10,10,.45)}
+.foto.grande img.real{object-fit:contain}
 #verfoto{position:fixed;inset:0;z-index:80;background:rgba(20,15,10,.92);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
 #verfoto[hidden]{display:none}
 #verfoto img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
@@ -329,11 +331,11 @@ const DIS={
      ["regalo","g13-07",[24,50,78,82],{b:[30,85.5,70,90.5,"copiar"]}],["confirmar","g13-08",[24,25,76,75],{b:[23,79,77,90]}],["final","g13-03",[25,26,75,79]]]},
  palacio:{nombre:"Palacio bordó",tapa:["h14-01","h14-09"],luz:"50%",pista:"Tocá el carruaje para abrir",mari:["#f3d9a4","#d9a35e","#6b3a1e"],
   tema:{fondo:"#f3e6d6",tinta:"#5a1420",oro:"#a8843f",suave:"#6e4636",boton:"#6e1a28",bt:"#fff6ea"},petalos:["#7d1426","#a3283c","#fff4e6","#f3dcc0"],
-  p:[["nombres","h14-02",[32,31,68,69]],["frase","h14-07",[25,27,71,60]],["foto","h14-03",[0,0,0,0],{f:[33,25,67,75],forma:"arco"}],
-     ["padres","h14-10",[25,27,71,60]],["fecha","h14-02",[32,31,68,69]],["cuenta","h14-04",[39,40,78,80],{p:1}],
+  p:[["nombres","h14-02",[32,31,68,69]],["frase","h14-07",[29,29,72,60]],["foto","h14-03",[0,0,0,0],{f:[7,7,93,93],grande:1}],
+     ["fecha","h14-02",[32,31,68,69]],["cuenta","h14-02",[32,33,68,67]],
      ["ceremonia","h14-05",[16,65,84,93],{p:1}],["fiesta","h14-06",[13,66,87,95],{p:1}],
-     ["cronograma","h14-07",[25,27,71,60]],["vestimenta","h14-02",[32,31,68,69]],
-     ["regalo","h14-10",[25,27,71,60],{corto:1}],["confirmar","h14-08",[18,27,82,62],{p:1}],["final","h14-01",[16,4,84,27],{p:1}]]},
+     ["cronograma","h14-07",[29,29,72,60]],["vestimenta","h14-02",[32,31,68,69]],
+     ["regalo","h14-10",[29,29,72,60],{corto:1}],["confirmar","h14-08",[18,27,82,62],{p:1}],["final","h14-01",[16,4,84,27],{p:1}]]},
  porcelana:{nombre:"Porcelana rosa",tapa:["h15-18","h15-11"],luz:"40%",pista:"Tocá el sobre para abrir",mari:["#f4c6d6","#d9a6c8","#8a5a78"],
   tema:{fondo:"#f6eff0",tinta:"#74506b",oro:"#b48aa6",suave:"#8a6f80",boton:"#b48aa6",bt:"#ffffff"},petalos:["#f6d3df","#e7c9ee","#ffffff","#f2b9cf"],
   p:[["nombres","h15-12",[30,40,70,57]],["frase","h15-13",[24,40,74,60]],["foto","h15-14",[0,0,0,0],{f:[29.5,23.5,72.5,47.5],forma:"oval",cap:[33,59,67,86],capT:"padres"}],
@@ -444,7 +446,7 @@ function render(id){
     vivo.forEach(([cl,l,t,r,b])=>{ const w=r-l,hh=b-t;
       h+=`<span class="pieza ${cl}" style="${pos([l,t,r,b])};background-image:url(${IMG(img)});background-size:${(1e4/w).toFixed(2)}% ${(1e4/hh).toFixed(2)}%;background-position:${w<100?(l/(100-w)*100).toFixed(2):0}% ${hh<100?(t/(100-hh)*100).toFixed(2):0}%;--r:-${(Math.random()*4).toFixed(2)}s;--d:${(4.5+Math.random()*2).toFixed(2)}s"></span>`; });
     if(tipo==="foto"){
-      h+=`<div class="foto ${o.forma||""}" data-foto="${o.n||1}" style="${pos(o.f)}"><span class="vacia">Tu foto acá</span></div>`;
+      h+=`<div class="foto ${o.forma||""}${o.grande?" grande":""}" data-foto="${o.n||1}" style="${pos(o.f)}"><span class="vacia">Tu foto acá</span></div>`;
       if(o.cap) h+=`<div class="t" style="${pos(o.cap)}"><div class="in">${contenido(o.capT||(id==="arcos"?"nombres":"frase"),{})}</div></div>`;
     } else {
       h+=`<div class="t${o.p?" panel":""}" style="${pos(caja)}"><div class="in">${contenido(tipo,o)}</div></div>`;
@@ -529,7 +531,12 @@ CAMPOS.forEach(c=>{
   $("#campos").append(campo(...c));
 });
 const fotos={1:null,2:null};
-function ponerFotos(){ $$(".foto").forEach(box=>{ const n=fotos[box.dataset.foto]?box.dataset.foto:1, src=fotos[n]; if(!src){ if(!box.querySelector(".vacia")) box.innerHTML='<span class="vacia">Tu foto acá</span>'; return; } const a=aj[n]; box.style.setProperty("--x",a.x+"%"); box.style.setProperty("--y",a.y+"%"); box.style.setProperty("--z",a.z); let im=box.querySelector("img.real"); if(im&&im.dataset.src===src) return; const bo=new Image(); bo.className="borroso"; bo.alt=""; bo.src=src; im=new Image(); im.className="real"; im.alt="Foto de los novios"; im.src=src; im.dataset.src=src; box.replaceChildren(bo,im); }); }
+ponerFotos.vars=box=>{ const n=fotos[box.dataset.foto]?box.dataset.foto:1, a=aj[n]; box.style.setProperty("--x",a.x+"%"); box.style.setProperty("--y",a.y+"%"); box.style.setProperty("--z",a.z); };
+function ponerFotos(){ $$(".foto").forEach(box=>{ const n=fotos[box.dataset.foto]?box.dataset.foto:1, src=fotos[n]; if(!src){ if(box.dataset.f) box.setAttribute("style",box.dataset.f); if(!box.querySelector(".vacia")) box.innerHTML='<span class="vacia">Tu foto acá</span>'; return; } const a=aj[n]; box.style.setProperty("--x",a.x+"%"); box.style.setProperty("--y",a.y+"%"); box.style.setProperty("--z",a.z); let im=box.querySelector("img.real"); if(im&&im.dataset.src===src) return; const bo=new Image(); bo.className="borroso"; bo.alt=""; bo.src=src; im=new Image(); im.className="real"; im.alt="Foto de los novios"; im.src=src; im.dataset.src=src; box.replaceChildren(bo,im);
+    if(box.classList.contains("grande")){ if(!box.dataset.f) box.dataset.f=box.getAttribute("style");
+      im.onload=()=>{ const r=im.naturalWidth/im.naturalHeight, A=768/1376, W=82, H=80; let w=W, h=W*A/r;
+        if(h>H){ h=H; w=H*r/A; }
+        box.setAttribute("style",`left:${(100-w)/2}%;top:${(100-h)/2}%;width:${w}%;height:${h}%`); ponerFotos.vars(box); }; } }); }
 Object.entries(DIS).forEach(([id,D])=>{ const b=document.createElement("button"); b.dataset.d=id; b.innerHTML=`<img src="${IMG(D.tapa[0])}" alt="" loading="lazy">${D.nombre}`; b.addEventListener("click",()=>diseno(id)); $("#disenos").append(b); });
 
 /* ---- diseño elegido ---- */
