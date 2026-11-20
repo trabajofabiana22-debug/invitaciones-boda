@@ -39,6 +39,28 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   background:radial-gradient(circle,rgba(255,246,214,1),rgba(255,230,170,0) 70%);animation:sube linear infinite;opacity:0}
 @keyframes sube{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-105cqw) translateX(4cqw);opacity:0}}
 
+/* ---------- partes de la imagen que se mueven (mariposas, carruaje, flores) ---------- */
+.pieza{position:absolute;background-repeat:no-repeat;pointer-events:none;will-change:transform;
+  -webkit-mask:radial-gradient(closest-side,#000 72%,transparent);mask:radial-gradient(closest-side,#000 72%,transparent)}
+.pieza.mari{animation:aletea var(--d,2.6s) ease-in-out var(--r,0s) infinite,posa 5s ease-in-out var(--r,0s) infinite alternate}
+@keyframes aletea{0%,38%,100%{scale:1 1}46%{scale:.35 1}54%{scale:1 1}62%{scale:.35 1}70%{scale:1 1}}
+@keyframes posa{to{translate:.5cqw -.7cqw}}
+.pieza.mece{transform-origin:50% 100%;animation:mece 4.5s ease-in-out var(--r,0s) infinite alternate;
+  -webkit-mask:radial-gradient(closest-side,#000 82%,transparent);mask:radial-gradient(closest-side,#000 82%,transparent)}
+@keyframes mece{from{rotate:-.9deg}to{rotate:.9deg}}
+.pieza.carro{transform-origin:50% 92%;animation:carro 3.2s ease-in-out infinite alternate;
+  -webkit-mask:radial-gradient(closest-side,#000 86%,transparent);mask:radial-gradient(closest-side,#000 86%,transparent)}
+@keyframes carro{from{translate:-.5cqw 0;rotate:-.35deg}to{translate:.5cqw -.5cqw;rotate:.35deg}}
+.pieza.llama{animation:llama 1.7s ease-in-out var(--r,0s) infinite alternate}
+@keyframes llama{0%{filter:brightness(1)}40%{filter:brightness(1.18)}70%{filter:brightness(1.05)}100%{filter:brightness(1.25)}}
+/* mariposas dibujadas que cruzan volando */
+.vuela{position:absolute;z-index:2;left:0;width:6.5cqw;pointer-events:none;animation:ruta var(--t,11s) linear forwards}
+.vuela.izq{animation-name:ruta2}
+.vuela svg{display:block;width:100%;rotate:var(--g,78deg);animation:ala .19s ease-in-out infinite alternate;filter:drop-shadow(0 .4cqw .5cqw rgba(60,30,40,.18))}
+@keyframes ala{to{transform:scaleX(.28)}}
+@keyframes ruta{0%{translate:-10cqw 0;opacity:0}8%{opacity:1}22%{translate:18cqw -9cqw}40%{translate:38cqw 3cqw}58%{translate:58cqw -12cqw}76%{translate:80cqw -2cqw}92%{opacity:1}100%{translate:112cqw -14cqw;opacity:0}}
+@keyframes ruta2{0%{translate:104cqw 0;opacity:0}8%{opacity:1}24%{translate:78cqw -10cqw}44%{translate:55cqw 2cqw}62%{translate:34cqw -11cqw}80%{translate:14cqw -3cqw}92%{opacity:1}100%{translate:-12cqw -15cqw;opacity:0}}
+
 /* ---------- textos sobre la imagen ---------- */
 .t{position:absolute;z-index:1;display:flex;align-items:center;justify-content:center;text-align:center;--e:1}
 .t .in{display:flex;flex-direction:column;align-items:center;gap:calc(1.4cqw*var(--e));max-width:100%}
@@ -161,7 +183,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #aviso.ver{opacity:1;translate:-50% 0}
 @media (prefers-reduced-motion: reduce){
   .capa,.escena,.escena *,.t .in>*{transition-duration:.01s!important;transition-delay:0s!important;animation:none!important}
-  .latido,.brillo,.polvo,.cartel.abajo{animation:none}
+  .latido,.brillo,.polvo,.cartel.abajo,.pieza{animation:none!important}
+  .vuela{display:none}
   #petalos{display:none}
 }
 </style>
@@ -290,8 +313,39 @@ const DIS={
      ["cuenta","g13-04",[29,29,71,74],{k:[[16,78,30,86],[34,78,47,86],[52,78,65,86],[70,78,84,86]]}],
      ["ceremonia","g13-03",[25,26,75,79]],["fiesta","g13-06",[29,35,72,80],{b:[29,83,71,88.5]}],
      ["cronograma","g13-02",[25,24,76,81]],["vestimenta","g13-02",[25,24,76,81]],
-     ["regalo","g13-07",[24,50,78,82],{b:[30,85.5,70,90.5,"copiar"]}],["confirmar","g13-08",[24,25,76,75],{b:[23,79,77,90]}],["final","g13-03",[25,26,75,79]]]}
+     ["regalo","g13-07",[24,50,78,82],{b:[30,85.5,70,90.5,"copiar"]}],["confirmar","g13-08",[24,25,76,75],{b:[23,79,77,90]}],["final","g13-03",[25,26,75,79]]]},
+ palacio:{nombre:"Palacio bordó",tapa:["h14-01","h14-09"],luz:"50%",pista:"Tocá el carruaje para abrir",mari:["#f3d9a4","#d9a35e","#6b3a1e"],
+  tema:{fondo:"#f3e6d6",tinta:"#5a1420",oro:"#a8843f",suave:"#6e4636",boton:"#6e1a28",bt:"#fff6ea"},petalos:["#7d1426","#a3283c","#fff4e6","#f3dcc0"],
+  p:[["nombres","h14-02",[32,31,68,69]],["frase","h14-07",[25,27,71,60]],["foto","h14-03",[0,0,0,0],{f:[33,25,67,75],forma:"arco"}],
+     ["padres","h14-10",[25,27,71,60]],["fecha","h14-02",[32,31,68,69]],["cuenta","h14-04",[39,40,78,80],{p:1}],
+     ["ceremonia","h14-05",[16,65,84,93],{p:1}],["fiesta","h14-06",[13,66,87,95],{p:1}],
+     ["cronograma","h14-07",[25,27,71,60]],["vestimenta","h14-02",[32,31,68,69]],
+     ["regalo","h14-10",[25,27,71,60],{corto:1}],["confirmar","h14-08",[18,27,82,62],{p:1}],["final","h14-01",[16,4,84,27],{p:1}]]},
+ porcelana:{nombre:"Porcelana rosa",tapa:["h15-18","h15-11"],luz:"40%",pista:"Tocá el sobre para abrir",mari:["#f4c6d6","#d9a6c8","#8a5a78"],
+  tema:{fondo:"#f6eff0",tinta:"#74506b",oro:"#b48aa6",suave:"#8a6f80",boton:"#b48aa6",bt:"#ffffff"},petalos:["#f6d3df","#e7c9ee","#ffffff","#f2b9cf"],
+  p:[["nombres","h15-12",[30,40,70,57]],["frase","h15-13",[24,40,74,60]],["foto","h15-14",[0,0,0,0],{f:[29.5,23.5,72.5,47.5],forma:"oval",cap:[33,59,67,86],capT:"padres"}],
+     ["fecha","h15-15",[14,55,86,92]],["cuenta","h15-16",[10,59,90,93]],
+     ["ceremonia","h15-15",[14,56,86,90]],["fiesta","h15-16",[10,59,90,93]],
+     ["cronograma","h15-17",[18,63,82,90]],["vestimenta","h15-12",[30,40,70,57]],
+     ["regalo","h15-17",[18,63,82,90],{corto:1}],["confirmar","h15-18",[18,49,82,76],{b:[29,78,67,85]}],["final","h15-15",[14,56,86,90]]]}
 };
+
+/* ========= LO QUE SE MUEVE DENTRO DE CADA IMAGEN =========
+   [tipo, izq, arriba, der, abajo] en %: mari = mariposa que aletea (se borra del fondo con OpenCV),
+   mece = flores que se balancean, carro = carruaje que se mece, llama = luz que titila */
+const VIVO={
+ "h14-01":[["carro",6,28,97,82],["mari",75.5,29.5,82.5,34],["mari",18,35,24.5,39.5],["mari",90,36,96.5,40.5],["mari",2,66.5,8.5,71]],
+ "h14-02":[["mari",24,63.5,35,72],["mari",57,68,68,76],["mece",6,77,74,100]],
+ "h14-03":[["mece",10,42,30,96],["mece",73,48,91,82]],
+ "h14-07":[["llama",27,60,70,82],["mece",0,64,23,92],["mece",66,62,100,92]],
+ "h14-10":[["llama",27,60,70,82],["mece",0,64,23,92],["mece",66,62,100,92]],
+ "h14-08":[["llama",72,49,90,72]],
+ "h14-09":[["mari",65.5,22.5,74.5,28.5],["mari",14.5,34,23.5,40],["mari",86.5,55.5,95.5,61.5]],
+ "h15-11":[["mari",29.2,5.6,39.0,12.8],["mari",20.7,9.2,36.9,17.9],["mari",82.3,14.1,92.3,20.3],["mari",8.7,14.5,16.7,20.0],["mari",30.5,18.3,45.0,26.5],["mari",61.4,18.8,71.9,24.4],["mari",39.8,64.2,50.3,69.8],["mari",14.5,86.6,21.5,91.7],["mece",0,28,17,70],["mece",83,28,100,70]],
+ "h15-12":[["mari",61.0,2.8,69.8,7.9],["mari",9.2,34.9,14.9,38.8]],
+ "h15-13":[["mari",81.2,11.3,86.4,14.1],["mari",64.1,12.5,73.1,17.4],["mari",75.9,12.6,84.5,17.3],["mari",61.3,15.8,66.3,20.7],["mari",70.9,16.2,81.3,21.5],["mari",57.6,18.2,63.6,21.3],["mari",55.0,19.8,59.9,24.1],["mari",74.4,21.2,84.0,26.1],["mari",51.8,21.5,57.6,24.9],["mari",61.1,21.9,71.7,27.5],["mari",69.2,25.6,78.8,29.9],["mari",64.2,26.5,70.3,32.3],["mari",60.2,28.2,66.9,33.2],["mari",71.3,28.4,84.2,35.3],["mari",66.7,32.1,71.8,36.3],["mari",67.8,34.7,80.3,41.8],["mari",60.3,37.5,70.3,42.9],["mari",68.0,39.4,78.1,44.7],["mari",62.8,42.2,72.6,47.8],["mari",56.4,45.0,66.2,50.6],["mece",18,61,82,90]],
+ "h15-17":[["mari",18.3,9.5,28.2,17.0],["mari",74.0,9.4,84.7,17.5],["mari",8.1,20.9,16.5,28.2],["mari",7.4,28.3,12.3,33.2],["mari",10.3,52.5,15.1,55.9]]
+};/*fin VIVO*/
 
 /* ========= LOS DATOS (todo se cambia desde "Editar") ========= */
 const datos={
@@ -372,10 +426,13 @@ function render(id){
   const D=DIS[id], m=$("#principal"); m.replaceChildren();
   D.p.forEach(([tipo,img,caja,o={}])=>{
     const s=document.createElement("section"); s.className="lienzo reveal oculto";
-    let h=`<div class="capa"><img class="fondo" src="${IMG(img)}" alt="" loading="lazy" decoding="async">`;
+    const vivo=VIVO[img]||[], sinMari=vivo.some(p=>p[0]==="mari");
+    let h=`<div class="capa"><img class="fondo" src="${IMG(sinMari?img+"-s":img)}" alt="" loading="lazy" decoding="async">`;
+    vivo.forEach(([cl,l,t,r,b])=>{ const w=r-l,hh=b-t;
+      h+=`<span class="pieza ${cl}" style="${pos([l,t,r,b])};background-image:url(${IMG(img)});background-size:${(1e4/w).toFixed(2)}% ${(1e4/hh).toFixed(2)}%;background-position:${w<100?(l/(100-w)*100).toFixed(2):0}% ${hh<100?(t/(100-hh)*100).toFixed(2):0}%;--r:-${(Math.random()*4).toFixed(2)}s;--d:${(2.2+Math.random()*1.6).toFixed(2)}s"></span>`; });
     if(tipo==="foto"){
       h+=`<div class="foto ${o.forma||""}" data-foto="${o.n||1}" style="${pos(o.f)}"><span class="vacia">Tu foto acá</span></div>`;
-      if(o.cap) h+=`<div class="t" style="${pos(o.cap)}"><div class="in">${contenido(id==="arcos"?"nombres":"frase",{})}</div></div>`;
+      if(o.cap) h+=`<div class="t" style="${pos(o.cap)}"><div class="in">${contenido(o.capT||(id==="arcos"?"nombres":"frase"),{})}</div></div>`;
     } else {
       h+=`<div class="t${o.p?" panel":""}" style="${pos(caja)}"><div class="in">${contenido(tipo,o)}</div></div>`;
     }
@@ -466,6 +523,21 @@ function observar(){
   io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.remove("oculto"); e.target.classList.add("visto"); io.unobserve(e.target);} }),{threshold:.22});
   $$(".reveal.oculto").forEach(s=>io.observe(s));
 }
+
+/* ---- mariposas que cruzan volando (dibujadas, colores del diseño) ---- */
+const MARI_SVG='<svg viewBox="-12 -11 24 22" aria-hidden="true"><g fill="var(--m1)" opacity=".92"><path d="M0-1C-3-8-11-11-11-4-11 1-5 1 0 0Z"/><path d="M0-1C3-8 11-11 11-4 11 1 5 1 0 0Z"/></g><g fill="var(--m2)" opacity=".92"><path d="M0 0C-2 4-8 10-9 5-10 2-5 0 0 0Z"/><path d="M0 0C2 4 8 10 9 5 10 2 5 0 0 0Z"/></g><path d="M0-5V6M0-5l-2-4M0-5l2-4" stroke="var(--m3)" stroke-width=".9" fill="none" stroke-linecap="round"/></svg>';
+function volar(){
+  const c=DIS[actual].mari||["#f6dfae","#e8c57f","#7a5a2a"];
+  $$(".lienzo.visto").forEach(s=>{
+    const r=s.getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight||document.hidden) return;
+    if(s.querySelectorAll(".vuela").length>1||Math.random()<.45) return;
+    const v=document.createElement("span"), izq=Math.random()<.5, t=9+Math.random()*5;
+    v.className="vuela"+(izq?" izq":""); v.innerHTML=MARI_SVG;
+    v.style.cssText=`top:${12+Math.random()*70}%;--t:${t}s;--g:${izq?-78:78}deg;--m1:${c[0]};--m2:${c[1]};--m3:${c[2]};width:${5+Math.random()*3}cqw`;
+    s.append(v); setTimeout(()=>v.remove(),t*1000+200);
+  });
+}
+setInterval(volar,3200);
 
 /* ---- pétalos ---- */
 let petalosOn=false;
