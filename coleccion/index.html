@@ -195,6 +195,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .grupo{font-family:var(--serif);font-size:18px;font-weight:600;margin-top:8px;color:#a8843f}
 .acciones{display:flex;gap:10px;margin-top:16px;position:sticky;bottom:-28px;background:#fffdf8;padding:10px 0 4px}
 .acciones button{flex:1;padding:12px;border-radius:12px;background:#a8843f;color:#fff;font-size:14px}
+.acciones.compartir{position:static;margin-top:0;padding-top:0}
+.acciones.compartir button{background:#25a35a}
+body.invitado #editar{display:none!important}
 .acciones button.sec{background:#f1eadc;color:#5e4826}
 #aviso{position:fixed;z-index:70;left:50%;bottom:90px;translate:-50% 20px;opacity:0;background:#2b2418;color:#fff;padding:10px 18px;border-radius:99px;font-family:var(--sans);font-size:14px;transition:.3s;pointer-events:none}
 #aviso.ver{opacity:1;translate:-50% 0}
@@ -235,6 +238,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <div class="acciones">
     <button class="sec" id="repetir">Ver la apertura otra vez</button>
     <button id="listo">Listo</button>
+  </div>
+  <div class="acciones compartir">
+    <button id="compartir">Compartir mi invitación</button>
   </div>
 </div>
 <div id="aviso"></div>
@@ -604,7 +610,7 @@ function abrir(){
   abrir.ts.push(setTimeout(cerrarPortada,fin+2900));
 }
 function destello(){ const f=document.createElement("div"); f.className="destello"; f.style.top=DIS[actual].luz; $("#escena").append(f); setTimeout(()=>f.remove(),1700); }
-function cerrarPortada(){ (abrir.ts||[]).forEach(clearTimeout); port.classList.add("final","fuera"); document.body.classList.remove("cerrado"); $("#editar").hidden=false; window.scrollTo(0,0); setTimeout(()=>port.hidden=true,1300); }
+function cerrarPortada(){ (abrir.ts||[]).forEach(clearTimeout); port.classList.add("final","fuera"); document.body.classList.remove("cerrado"); if(!invitado) $("#editar").hidden=false; window.scrollTo(0,0); setTimeout(()=>port.hidden=true,1300); }
 $("#abrir").addEventListener("click",abrir);
 $("#repetir").addEventListener("click",()=>{ $("#hoja").classList.remove("abierta"); window.scrollTo(0,0); reiniciarPortada(); render(actual); });
 btnM.addEventListener("click",()=>{ if(audio.paused){audio.play();btnM.classList.add("sonando");} else {audio.pause();btnM.classList.remove("sonando");} });
@@ -621,9 +627,35 @@ function cuenta(){
 }
 setInterval(cuenta,1000);
 
-/* arranque: #salvia, #bordo... ; "-abierta" salta la portada (para revisar) */
+
+/* ---- compartir: los datos viajan comprimidos dentro del link ---- */
+const ORIG=JSON.parse(JSON.stringify(datos)); let invitado=false;
+async function empacar(o){ const st=new Blob([JSON.stringify(o)]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+  const b=new Uint8Array(await new Response(st).arrayBuffer()); let t=""; b.forEach(x=>t+=String.fromCharCode(x));
+  return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+async function desempacar(c){ const t=atob(c.replace(/-/g,"+").replace(/_/g,"/")), b=Uint8Array.from(t,x=>x.charCodeAt(0));
+  const st=new Blob([b]).stream().pipeThrough(new DecompressionStream("deflate-raw")); return JSON.parse(await new Response(st).text()); }
+async function miLink(){
+  const o={d:actual,t:{}}; Object.keys(datos).forEach(k=>{ if(datos[k]!==ORIG[k]) o.t[k]=datos[k]; });
+  const m=MELODIAS.find(([v])=>audio.src.endsWith(v)); if(m) o.m=m[0];
+  [1,2].forEach(n=>{ if(fotos[n]&&/^https:/.test(fotos[n])) (o.f=o.f||{})[n]=fotos[n]; });
+  o.a=aj; return location.origin+location.pathname+"#i="+await empacar(o);
+}
+$("#compartir").addEventListener("click",async()=>{
+  const url=await miLink(), local=[1,2].some(n=>fotos[n]&&!/^https:/.test(fotos[n]));
+  if(local) aviso("Ojo: la foto todavía no viaja en el link (estamos terminando esa parte)");
+  const txt=`${datos.novia} & ${datos.novio} · ¡Estás invitado a nuestro casamiento!`;
+  if(navigator.share){ try{ await navigator.share({title:txt,text:txt,url}); return; }catch(e){ if(e.name==="AbortError") return; } }
+  try{ await navigator.clipboard.writeText(url); aviso("Link copiado: pegalo en WhatsApp"); }catch(e){ prompt("Copiá tu link:",url); }
+});
+
+/* arranque: #salvia, #bordo... ; "-abierta" salta la portada (para revisar); "#i=..." es la invitación de una novia */
 const h=location.hash.slice(1), id=h.split("-")[0];
-diseno(DIS[id]?id:"marfil");
+if(h.startsWith("i=")){ invitado=true; document.body.classList.add("invitado");
+  desempacar(h.slice(2)).then(o=>{ Object.assign(datos,o.t||{}); if(o.m) audio.src=o.m;
+    if(o.a) Object.assign(aj,o.a); if(o.f) Object.assign(fotos,o.f); diseno(DIS[o.d]?o.d:"marfil"); ponerFotos(); aplicar(); })
+  .catch(()=>diseno("marfil")); }
+else diseno(DIS[id]?id:"marfil");
 if(h.includes("abierta")){ port.hidden=true; document.body.classList.remove("cerrado"); $$(".reveal").forEach(s=>s.classList.remove("oculto")); $$(".reveal").forEach(s=>s.classList.add("visto")); setTimeout(ajustar,300); }
 </script>
 </body>
