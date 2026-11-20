@@ -106,6 +106,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .clara{color:#fffaf0!important}.osc{color:#3a2a22!important}
 .foto{position:absolute;z-index:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,252,246,.35)}
 .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto img.real{object-position:var(--x,50%) var(--y,30%);transform:scale(var(--z,1));transform-origin:var(--x,50%) var(--y,30%)}
+.foto img.borroso{position:absolute;inset:0;object-position:50% 50%;filter:blur(8px) brightness(1.05);transform:scale(1.2);opacity:.85}
+.foto img.real{position:relative;cursor:zoom-in}
+#verfoto{position:fixed;inset:0;z-index:80;background:rgba(20,15,10,.92);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+#verfoto[hidden]{display:none}
+#verfoto img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#verfoto span{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#fff;font-family:var(--sans);font-size:13px;opacity:.8}
+.ajuste{display:none;margin:-4px 0 12px;padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.04);font-size:13px}
+.ajuste.si{display:block}
+.ajuste label{display:flex;align-items:center;gap:8px;margin:4px 0}
+.ajuste label span{flex:0 0 120px}
+.ajuste input{flex:1;width:auto}
 .foto:has(.vacia){outline:1px dashed color-mix(in srgb,var(--oro) 70%,transparent);outline-offset:-1px}
 .foto .vacia{font-style:italic;font-size:3.8cqw;color:var(--suave);padding:3cqw;text-align:center}
 .oval{border-radius:50%}.redondo{border-radius:4cqw}.arco{border-radius:50% 50% 2cqw 2cqw/38% 38% 2cqw 2cqw}
@@ -220,6 +232,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   </div>
 </div>
 <div id="aviso"></div>
+<div id="verfoto" hidden><img alt="Foto de los novios"><span>Tocá para cerrar</span></div>
 <audio id="audio" loop preload="auto" src="musica1.mp3"></audio>
 
 <script>
@@ -363,7 +376,7 @@ const datos={
 };
 const CAMPOS=[
   ["g","Los novios"],["novia","Nombre de ella"],["novio","Nombre de él"],["eti","Frase de arriba de los nombres"],
-  ["foto1","Foto principal","file"],["foto2","Segunda foto (si el diseño la tiene)","file"],
+  ["foto1","Foto principal","file"],["aj","1","ajuste"],["foto2","Segunda foto (si el diseño la tiene)","file"],["aj","2","ajuste"],
   ["g","La música"],["melodia","Melodía","melodia"],["cancion","O subí tu canción (usá música propia o con permiso)","audio"],
   ["g","La fecha"],["fecha","Fecha","date"],["par",["hora_ceremonia","Hora ceremonia","time"],["hora_fiesta","Hora fiesta","time"]],
   ["g","Los lugares"],["lugar_ceremonia","Lugar de la ceremonia"],["direccion_ceremonia","Dirección de la ceremonia"],
@@ -489,17 +502,30 @@ function campo(k,l,tipo){
     inp.addEventListener("change",()=>{ audio.src=inp.value; audio.play().then(()=>{btnM.hidden=false;btnM.classList.add("sonando");}).catch(()=>{}); }); }
   else { inp=document.createElement(tipo==="area"?"textarea":"input");
     if(tipo==="audio"){ inp.type="file"; inp.accept="audio/*"; inp.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; audio.src=URL.createObjectURL(f); audio.play().then(()=>{btnM.hidden=false;btnM.classList.add("sonando");}).catch(()=>{}); aviso("Canción cambiada"); }); }
-    else if(tipo==="file"){ inp.type="file"; inp.accept="image/*"; inp.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; fotos[k==="foto1"?1:2]=URL.createObjectURL(f); ponerFotos(); }); }
+    else if(tipo==="file"){ inp.type="file"; inp.accept="image/*"; inp.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const n=k==="foto1"?1:2; fotos[n]=URL.createObjectURL(f); $("#aj"+n).classList.add("si"); ponerFotos(); aviso("Si no quedó bien, acomodala con las barritas"); }); }
     else { inp.type=tipo||"text"; if(tipo!=="area") inp.type=tipo||"text"; inp.value=datos[k]; inp.addEventListener("input",()=>{ datos[k]=inp.value; aplicar(); }); } }
   lab.append(inp); return lab;
 }
+var aj={1:{x:50,y:30,z:1},2:{x:50,y:30,z:1}};
+document.addEventListener("click",e=>{ const im=e.target.closest(".foto img.real"); const v=$("#verfoto");
+  if(im){ v.querySelector("img").src=im.src; v.hidden=false; return; } if(e.target.closest("#verfoto")) v.hidden=true; });
+function ajuste(n){
+  const d=document.createElement("div"); d.className="ajuste"; d.id="aj"+n;
+  [["z","Achicar o agrandar",.5,2.5,.05],["y","Subir o bajar",0,100,1],["x","Correr a los costados",0,100,1]].forEach(([k,l,mi,ma,pa])=>{
+    const lab=document.createElement("label"), sp=document.createElement("span"), r=document.createElement("input");
+    sp.textContent=l; r.type="range"; r.min=mi; r.max=ma; r.step=pa; r.value=aj[n][k];
+    r.addEventListener("input",()=>{ aj[n][k]=+r.value; ponerFotos(); });
+    lab.append(sp,r); d.append(lab); });
+  return d;
+}
 CAMPOS.forEach(c=>{
+  if(c[2]==="ajuste"){ $("#campos").append(ajuste(c[1])); return; }
   if(c[0]==="g"){ const h=document.createElement("div"); h.className="grupo"; h.textContent=c[1]; $("#campos").append(h); return; }
   if(c[0]==="par"){ const p=document.createElement("div"); p.className="par"; p.append(campo(...c[1]),campo(...c[2])); $("#campos").append(p); return; }
   $("#campos").append(campo(...c));
 });
 const fotos={1:null,2:null};
-function ponerFotos(){ $$(".foto").forEach(box=>{ const src=fotos[box.dataset.foto]||fotos[1]; if(!src) return; const im=new Image(); im.alt="Foto de los novios"; im.src=src; box.replaceChildren(im); }); }
+function ponerFotos(){ $$(".foto").forEach(box=>{ const n=fotos[box.dataset.foto]?box.dataset.foto:1, src=fotos[n]; if(!src) return; const a=aj[n]; box.style.setProperty("--x",a.x+"%"); box.style.setProperty("--y",a.y+"%"); box.style.setProperty("--z",a.z); let im=box.querySelector("img.real"); if(im&&im.dataset.src===src) return; const bo=new Image(); bo.className="borroso"; bo.alt=""; bo.src=src; im=new Image(); im.className="real"; im.alt="Foto de los novios"; im.src=src; im.dataset.src=src; box.replaceChildren(bo,im); }); }
 Object.entries(DIS).forEach(([id,D])=>{ const b=document.createElement("button"); b.dataset.d=id; b.innerHTML=`<img src="${IMG(D.tapa[0])}" alt="" loading="lazy">${D.nombre}`; b.addEventListener("click",()=>diseno(id)); $("#disenos").append(b); });
 
 /* ---- diseño elegido ---- */
