@@ -425,8 +425,7 @@ function render(id){
   const D=DIS[id], m=$("#principal"); m.replaceChildren();
   D.p.forEach(([tipo,img,caja,o={}])=>{
     const s=document.createElement("section"); s.className="lienzo reveal oculto";
-    const vivo0=VIVO[img]||[], acerca=vivo0.some(p=>p[0]==="carro"), vivo=vivo0.filter(p=>p[0]!=="mece"&&p[0]!=="carro"), sinMari=vivo.some(p=>p[0]==="mari");
-    if(acerca) s.classList.add("acerca");
+    const vivo=(VIVO[img]||[]).filter(p=>p[0]==="mari"), sinMari=vivo.some(p=>p[0]==="mari");
     let h=`<div class="capa"><img class="fondo" src="${IMG(sinMari?img+"-s":img)}" alt="" loading="lazy" decoding="async">`;
     vivo.forEach(([cl,l,t,r,b])=>{ const w=r-l,hh=b-t;
       h+=`<span class="pieza ${cl}" style="${pos([l,t,r,b])};background-image:url(${IMG(img)});background-size:${(1e4/w).toFixed(2)}% ${(1e4/hh).toFixed(2)}%;background-position:${w<100?(l/(100-w)*100).toFixed(2):0}% ${hh<100?(t/(100-hh)*100).toFixed(2):0}%;--r:-${(Math.random()*4).toFixed(2)}s;--d:${(2.2+Math.random()*1.6).toFixed(2)}s"></span>`; });
