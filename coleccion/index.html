@@ -44,8 +44,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- partes de la imagen que se mueven (mariposas, carruaje, flores) ---------- */
 .pieza{position:absolute;background-repeat:no-repeat;pointer-events:none;will-change:transform;
   -webkit-mask:radial-gradient(closest-side,#000 72%,transparent);mask:radial-gradient(closest-side,#000 72%,transparent)}
-.pieza.mari{animation:aletea var(--d,2.6s) ease-in-out var(--r,0s) infinite,posa 5s ease-in-out var(--r,0s) infinite alternate}
-@keyframes aletea{0%,38%,100%{scale:1 1}46%{scale:.35 1}54%{scale:1 1}62%{scale:.35 1}70%{scale:1 1}}
+.pieza.mari{animation:aletea var(--d,2.6s) ease-in-out var(--r,0s) infinite,posa 9s ease-in-out var(--r,0s) infinite alternate}
+@keyframes aletea{0%,25%,100%{scale:1 1}50%{scale:.55 1}75%{scale:1 1}}
 @keyframes posa{to{translate:.5cqw -.7cqw}}
 .pieza.mece{transform-origin:50% 100%;animation:mece 4.5s ease-in-out var(--r,0s) infinite alternate;
   -webkit-mask:radial-gradient(closest-side,#000 82%,transparent);mask:radial-gradient(closest-side,#000 82%,transparent)}
@@ -58,8 +58,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* mariposas dibujadas que cruzan volando */
 .vuela{position:absolute;z-index:2;left:0;width:6.5cqw;pointer-events:none;animation:ruta var(--t,11s) linear forwards}
 .vuela.izq{animation-name:ruta2}
-.vuela svg{display:block;width:100%;rotate:var(--g,78deg);animation:ala .19s ease-in-out infinite alternate;filter:drop-shadow(0 .4cqw .5cqw rgba(60,30,40,.18))}
-@keyframes ala{to{transform:scaleX(.28)}}
+.vuela svg{display:block;width:100%;rotate:var(--g,78deg);animation:ala .6s ease-in-out infinite alternate;filter:drop-shadow(0 .4cqw .5cqw rgba(60,30,40,.18))}
+@keyframes ala{to{transform:scaleX(.45)}}
 @keyframes ruta{0%{translate:-10cqw 0;opacity:0}8%{opacity:1}22%{translate:18cqw -9cqw}40%{translate:38cqw 3cqw}58%{translate:58cqw -12cqw}76%{translate:80cqw -2cqw}92%{opacity:1}100%{translate:112cqw -14cqw;opacity:0}}
 @keyframes ruta2{0%{translate:104cqw 0;opacity:0}8%{opacity:1}24%{translate:78cqw -10cqw}44%{translate:55cqw 2cqw}62%{translate:34cqw -11cqw}80%{translate:14cqw -3cqw}92%{opacity:1}100%{translate:-12cqw -15cqw;opacity:0}}
 
@@ -428,7 +428,7 @@ function render(id){
     const vivo=(VIVO[img]||[]).filter(p=>p[0]==="mari"), sinMari=vivo.some(p=>p[0]==="mari");
     let h=`<div class="capa"><img class="fondo" src="${IMG(sinMari?img+"-s":img)}" alt="" loading="lazy" decoding="async">`;
     vivo.forEach(([cl,l,t,r,b])=>{ const w=r-l,hh=b-t;
-      h+=`<span class="pieza ${cl}" style="${pos([l,t,r,b])};background-image:url(${IMG(img)});background-size:${(1e4/w).toFixed(2)}% ${(1e4/hh).toFixed(2)}%;background-position:${w<100?(l/(100-w)*100).toFixed(2):0}% ${hh<100?(t/(100-hh)*100).toFixed(2):0}%;--r:-${(Math.random()*4).toFixed(2)}s;--d:${(2.2+Math.random()*1.6).toFixed(2)}s"></span>`; });
+      h+=`<span class="pieza ${cl}" style="${pos([l,t,r,b])};background-image:url(${IMG(img)});background-size:${(1e4/w).toFixed(2)}% ${(1e4/hh).toFixed(2)}%;background-position:${w<100?(l/(100-w)*100).toFixed(2):0}% ${hh<100?(t/(100-hh)*100).toFixed(2):0}%;--r:-${(Math.random()*4).toFixed(2)}s;--d:${(4.5+Math.random()*2).toFixed(2)}s"></span>`; });
     if(tipo==="foto"){
       h+=`<div class="foto ${o.forma||""}" data-foto="${o.n||1}" style="${pos(o.f)}"><span class="vacia">Tu foto acá</span></div>`;
       if(o.cap) h+=`<div class="t" style="${pos(o.cap)}"><div class="in">${contenido(o.capT||(id==="arcos"?"nombres":"frase"),{})}</div></div>`;
@@ -530,13 +530,13 @@ function volar(){
   $$(".lienzo.visto").forEach(s=>{
     const r=s.getBoundingClientRect(); if(r.bottom<0||r.top>innerHeight||document.hidden) return;
     if(s.querySelectorAll(".vuela").length>1||Math.random()<.45) return;
-    const v=document.createElement("span"), izq=Math.random()<.5, t=9+Math.random()*5;
+    const v=document.createElement("span"), izq=Math.random()<.5, t=18+Math.random()*6;
     v.className="vuela"+(izq?" izq":""); v.innerHTML=MARI_SVG;
     v.style.cssText=`top:${12+Math.random()*70}%;--t:${t}s;--g:${izq?-78:78}deg;--m1:${c[0]};--m2:${c[1]};--m3:${c[2]};width:${5+Math.random()*3}cqw`;
     s.append(v); setTimeout(()=>v.remove(),t*1000+200);
   });
 }
-setInterval(volar,3200);
+setInterval(volar,4500);
 
 /* ---- pétalos ---- */
 let petalosOn=false;
