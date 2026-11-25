@@ -205,7 +205,7 @@ body.invitado #editar{display:none!important}
 #editar,#hoja{display:none!important}
 #musica{bottom:max(46px,calc(30px + env(safe-area-inset-bottom)))}
 #marca{position:fixed;inset:-40vmax;z-index:80;pointer-events:none;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:9vmax 6vmax;rotate:-30deg}
-#marca span{font-family:var(--sans);font-weight:500;font-size:9vmin;letter-spacing:.3em;color:rgba(255,255,255,.22);-webkit-text-stroke:1px rgba(110,80,35,.32);white-space:nowrap}
+#marca span{font-family:var(--sans);font-weight:400;font-size:8vmin;letter-spacing:.35em;color:rgba(25,25,25,.42);text-shadow:0 0 3px rgba(255,255,255,.55);white-space:nowrap}
 #cinta{position:fixed;z-index:81;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;pointer-events:none;text-align:center;font-family:var(--sans);font-size:12px;letter-spacing:.12em;
   text-transform:uppercase;color:#fffaf0;background:rgba(94,72,38,.88);padding:7px 10px calc(7px + env(safe-area-inset-bottom))}
 @media (prefers-reduced-motion: reduce){
@@ -573,7 +573,7 @@ function diseno(id){
   $("#latido").style.top=D.luz; $("#pista").textContent=D.pista;
   $$("#disenos button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===id));
   reiniciarPortada(); render(id);
-  history.replaceState(null,"","#"+id);
+  history.replaceState(null,"",location.pathname+location.search+"#"+id);
 }
 
 /* ---- aparición de cada pantalla ---- */

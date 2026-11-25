@@ -565,7 +565,7 @@ function diseno(id){
   $("#latido").style.top=D.luz; $("#pista").textContent=D.pista;
   $$("#disenos button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===id));
   reiniciarPortada(); render(id);
-  history.replaceState(null,"","#"+id);
+  history.replaceState(null,"",location.pathname+location.search+"#"+id);
 }
 
 /* ---- aparición de cada pantalla ---- */
