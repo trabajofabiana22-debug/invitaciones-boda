@@ -201,6 +201,13 @@ body.invitado #editar{display:none!important}
 .acciones button.sec{background:#f1eadc;color:#5e4826}
 #aviso{position:fixed;z-index:70;left:50%;bottom:90px;translate:-50% 20px;opacity:0;background:#2b2418;color:#fff;padding:10px 18px;border-radius:99px;font-family:var(--sans);font-size:14px;transition:.3s;pointer-events:none}
 #aviso.ver{opacity:1;translate:-50% 0}
+/* ---------- MUESTRA: solo para mirar ---------- */
+#editar,#hoja{display:none!important}
+#musica{bottom:max(46px,calc(30px + env(safe-area-inset-bottom)))}
+#marca{position:fixed;inset:-40vmax;z-index:80;pointer-events:none;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:9vmax 6vmax;rotate:-30deg}
+#marca span{font-family:var(--sans);font-weight:500;font-size:9vmin;letter-spacing:.3em;color:rgba(255,255,255,.22);-webkit-text-stroke:1px rgba(110,80,35,.32);white-space:nowrap}
+#cinta{position:fixed;z-index:81;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;pointer-events:none;text-align:center;font-family:var(--sans);font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:#fffaf0;background:rgba(94,72,38,.88);padding:7px 10px calc(7px + env(safe-area-inset-bottom))}
 @media (prefers-reduced-motion: reduce){
   .capa,.escena,.escena *,.t .in>*{transition-duration:.01s!important;transition-delay:0s!important;animation:none!important}
   .latido,.brillo,.polvo,.cartel.abajo,.pieza{animation:none!important}
@@ -244,6 +251,9 @@ body.invitado #editar{display:none!important}
   </div>
 </div>
 <div id="aviso"></div>
+<div id="marca" aria-hidden="true"></div>
+<div id="cinta">Muestra · nombres de ejemplo</div>
+<script>document.getElementById("marca").innerHTML="<span>MUESTRA</span>".repeat(40);</script>
 <div id="verfoto" hidden><img alt="Foto de los novios"><span>Tocá para cerrar</span></div>
 <audio id="audio" loop preload="auto" src="musica1.mp3"></audio>
 
